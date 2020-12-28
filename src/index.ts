@@ -11,21 +11,23 @@ const API_KEY = process.env.API_KEY;
 
 const getVideos = async (channelId: string) => {
   const service = google.youtube('v3');
-  const response = await service.search.list({
+  // Solution ref: https://stackoverflow.com/a/27872244
+  // UCoOY8_LHn6EBM25BN2_z0Ww => UUoOY8_LHn6EBM25BN2_z0Ww
+  const playlistId = channelId.replace('UC', 'UU');
+  const response = await service.playlistItems.list({
     auth: API_KEY,
     part: ['snippet'],
-    channelId: channelId,
+    playlistId,
     maxResults: 10,
-    order: 'date',
   });
 
   const videos = response.data.items;
   const results = videos?.map((video) => ({
     title: entities.decode(String(video.snippet?.title)),
-    url: `https://www.youtube.com/watch?v=${video.id?.videoId}`,
+    url: `https://www.youtube.com/watch?v=${video.snippet?.resourceId?.videoId}`,
     description: String(video.snippet?.description),
     publishedAt: String(video.snippet?.publishedAt),
-    thumbnailUrl: String(video.snippet?.thumbnails?.high?.url),
+    thumbnailUrl: String(video.snippet?.thumbnails?.standard?.url),
     channelTitle: String(video.snippet?.channelTitle),
   }));
 

@@ -28,7 +28,11 @@ const getVideos = async (channelId: string) => {
     url: `https://www.youtube.com/watch?v=${video.snippet?.resourceId?.videoId}`,
     description: String(video.snippet?.description),
     publishedAt: String(video.snippet?.publishedAt),
-    thumbnailUrl: String(video.snippet?.thumbnails?.standard?.url),
+    thumbnailUrl: String(
+      video.snippet?.thumbnails?.standard?.url ||
+      video.snippet?.thumbnails?.high?.url ||
+      video.snippet?.thumbnails?.default?.url
+    ),
     channelTitle: String(video.snippet?.channelTitle),
   }));
 
